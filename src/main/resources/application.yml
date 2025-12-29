@@ -1,0 +1,119 @@
+spring:
+  application:
+    name: referral-backend
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/referral_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:your-secret-key-change-in-production-min-256-bits}
+  expiration: 86400000 # 24 hours
+  refresh-expiration: 604800000 # 7 days
+  issuer: referral-backend
+
+# OAuth2 Configuration
+oauth2:
+  client:
+    registration:
+      google:
+        client-id: ${GOOGLE_CLIENT_ID:}
+        client-secret: ${GOOGLE_CLIENT_SECRET:}
+        scope: profile,email
+      github:
+        client-id: ${GITHUB_CLIENT_ID:}
+        client-secret: ${GITHUB_CLIENT_SECRET:}
+        scope: read:user,user:email
+
+# AWS Configuration
+aws:
+  region: ${AWS_REGION:us-east-1}
+  credentials:
+    access-key: ${AWS_ACCESS_KEY:}
+    secret-key: ${AWS_SECRET_KEY:}
+  dynamodb:
+    table-prefix: referral-
+  sqs:
+    queue-name: referral-queue
+  sns:
+    topic-arn: ${SNS_TOPIC_ARN:}
+  ses:
+    from-email: ${SES_FROM_EMAIL:noreply@referral.com}
+  eventbridge:
+    event-bus-name: referral-events
+
+# Razorpay Configuration
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID:}
+  key-secret: ${RAZORPAY_KEY_SECRET:}
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
+
+# OpenAI/LLM Configuration
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  model: gpt-4-turbo-preview
+  temperature: 0.3
+  max-tokens: 2000
+
+# Internal API Security
+internal-api:
+  secret-header: ${INTERNAL_API_SECRET:internal-api-secret-change-in-production}
+  header-name: X-Internal-API-Secret
+
+# Referral Configuration
+referral:
+  sla:
+    hours: 24
+  retry:
+    max-attempts: 3
+    backoff-millis: 5000
+  resume:
+    processing-timeout-seconds: 300
+
+# Notification Configuration
+notification:
+  email:
+    rate-limit-per-minute: 10
+    abuse-threshold: 100
+  sms:
+    rate-limit-per-minute: 5
+    abuse-threshold: 50
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    com.referral: DEBUG
+    org.springframework.security: INFO
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+
